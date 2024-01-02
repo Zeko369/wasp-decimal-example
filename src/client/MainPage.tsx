@@ -1,6 +1,9 @@
 import React, { FormEventHandler, FormEvent } from "react";
 import waspLogo from "./waspLogo.png";
 
+import { Decimal } from "decimal.js";
+import "../shared/superjson";
+
 import "./Main.css";
 // Wasp imports 🐝 = }
 import logout from "@wasp/auth/logout";
@@ -10,6 +13,20 @@ import createTask from "@wasp/actions/createTask";
 import updateTask from "@wasp/actions/updateTask";
 import deleteTasks from "@wasp/actions/deleteTasks";
 import type { Task, User } from "@wasp/entities";
+import getDecimal from "@wasp/queries/getDecimal";
+
+const Inner = () => {
+  const { data, isLoading, error } = useQuery(getDecimal);
+
+  if (isLoading) return "Loading...";
+  if (error) return "Error: " + error;
+
+  if (data instanceof Decimal) {
+    return <h1>Decimal - {data.toString()}</h1>;
+  }
+
+  return <h1>Not Decimal</h1>;
+};
 
 export const MainPage = ({ user }: { user: User }) => {
   const { data: tasks, isLoading, error } = useQuery(getTasks);
@@ -21,6 +38,8 @@ export const MainPage = ({ user }: { user: User }) => {
 
   return (
     <main>
+      <Inner />
+
       <img src={waspLogo} alt="wasp logo" />
       {user && (
         <h1>
